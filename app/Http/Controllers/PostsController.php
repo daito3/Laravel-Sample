@@ -4,10 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
+use DB;
+
 //use App\Models\Comment;
 
 class PostsController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +27,10 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts=DB::table('posts')
+            ->leftJoin('users', 'users.id', '=', 'posts.user_id')
+            ->select('posts.id AS post_id', 'posts.user_id', 'posts.name AS post_name', 'users.name AS user_name','posts.content AS post_contents')
+            ->get();
         return view('posts',compact('posts'));
     }
 
@@ -26,7 +41,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        return view('create');
     }
 
     /**
@@ -37,7 +52,17 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $d=DB::table('posts')
+            ->where('user_id', \Auth::user()->id)
+            ->get();
+
+
+        $post = new Post;
+        $post->user_id = $request->user()->id;
+        $post->name=$request->input('name');
+        $post->content=$request->input('content');
+        $post->save();
+        return redirect('posts');
     }
 
     /**
@@ -86,4 +111,5 @@ class PostsController extends Controller
     {
         //
     }
+
 }

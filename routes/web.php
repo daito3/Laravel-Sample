@@ -19,6 +19,10 @@ Route::get('/', function () {
 
 Route::get('/posts',[PostsController::class,'index']);
 
+Route::get('/create', [PostsController::class,'create'])->name('create');
+
+Route::post('/store', [PostsController::class,'store'])->name('store');
+
 Route::get('/show/{id}', [PostsController::class, 'show'])->name('show');
 
 
@@ -26,3 +30,4 @@ Route::get('/show/{id}', [PostsController::class, 'show'])->name('show');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
